@@ -38,10 +38,12 @@ class SmartCamera:
             y = top - 15 if top - 15 > 15 else top + 15
             putText(self.output, name, (left, y), FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
 
-            print(f"I see someone named {name}" + (' enter.' if enter else ' exit.'))
+        print(f"I see someone named {name}" + (' enter.' if enter else ' exit.'))
 
         # save picture
         imwrite("snaps/" + name + "_" + time + '.jpg', self.output[:, :, ::-1])
+
+        return name
 
     def close(self):
         self.camera.close()

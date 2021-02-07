@@ -2,6 +2,7 @@ import RPi.GPIO as GPIO  # Import GPIO library
 import time  # Import time library
 import I2C_LCD_driver
 from camera_utills import SmartCamera
+from iot_utills import ClientModule
 
 GPIO.setmode(GPIO.BCM)  # S et GPIO pin numbering
 pir_r = 23  # Associate pin 23 to right sensor
@@ -13,11 +14,14 @@ lcd = I2C_LCD_driver.lcd()
 
 camera = SmartCamera()
 
+client = ClientModule()
+
 counter = 0
 
 
 def motion_sensor(channel):
-    global counter, camera, output, saved_pics, saved_names
+    global counter, camera, client, output, saved_pics, saved_names
+    event_time = time.time()
     enter = False
     lcd.lcd_clear()
 
@@ -27,9 +31,11 @@ def motion_sensor(channel):
         counter += 1
         enter = True
 
-    camera.capture(enter, time.ctime(time.time()))
+    name = camera.capture(enter, time.ctime(event_time))
 
     lcd.lcd_display_string(f'{counter} ' + ('person' if counter == 1 else 'people') + ' inside')
+
+    client.log_enter(name, enter, time)
 
 
 print("Waiting for sensor to settle")
